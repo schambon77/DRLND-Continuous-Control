@@ -129,3 +129,10 @@ The training reaches the acceptance criteria after 283 episodes.
 
 ### Ideas for Future Work
 
+The training was performed on a local CPU, and took a couple of hours. Interestingly, 
+the GPU-enabled online workspace from Udacity didn't help much in speeding the training.
+
+For future work, I'd be very interested in implementing a technique like D4PG
+more prone to GPU (hence faster) training. I also understand that having separate agents
+gettting trained independently and sharing updates at regular times could help getting a 
+better (and faster) model. To be investigated (time-permitting of course!).
