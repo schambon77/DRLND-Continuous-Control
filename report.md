@@ -11,6 +11,47 @@ The solution is based in most parts on the [DDPG implementation for the pendulum
 
 ### Learning Algorithm
 
+The [DDPG](https://arxiv.org/abs/1509.02971) (Deep Deterministic Policy Gradient) algorithm is an Actor-Critic type of
+reinforcement learning algorithm, with similarities to 
+[DQN](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) (Deep Q-Networks).
+
+One limit of the DQN algorithm is its inability to deal with continuous action space. DDPG implements the actor-critic 
+concept to palliate this problem, where:
+- the actor trains a neural network to estimate the optimal deterministic policy (best believed action for any given state)
+- and the critic trains a neural network to estimate the action-value function using the estimated optimal policy
+
+As the actor is prone to high varience, and the critic to high bias, the combination of the 2 helps for an efficient
+reinforcement learning algorithm.
+
+To avoid instabilities in training non-linear function approximators, DDPG uses 2 fundamental improvements illustrated 
+by DQN:
+- the use of a replay buffer
+- and the use of target networks to stabilize the training of local networks for both actor and critic
+
+Furthermore, DDPG adds the concept of soft updates to slowly blend the trained local networks weights into 
+the target networks at every timestep, rather than regular although abrupt weight updates.
+
+Here are the main steps of the DDPG algorithm:
+- initialize critic and actor local networks
+- copy the local weights to both target networks
+- initialize a replay buffer
+- iterate over N episodes
+- for each episode:
+    - get first observation from environment
+    - iterate over T timesteps
+    - for each timestep, until terminal state encountered:
+        - select an action with the local actor network (with noise added for exploration purposes)
+        - execute the selected action in the environment and observe the new state and reward
+        - store the experience tuple in the replay buffer
+        - sample a random minibatch from the replay buffer
+        - compute the target action-value = reward + discounted action-value of next state and action using critic target network
+        - compute the local action-value using the local critic network 
+        - update local critic weights by minimizing the critic loss between local and target action-value
+        - compute the predicted action with local actor network
+        - compute the actor loss using the local critic network with the state and predicted action
+        - update local actor weights by minizing the actor loss
+        - perform a soft-update of both critic and actor target network weights
+
 #### Networks
 
 This section reuses the provided source code for the DDPG pendulum as is with no modification.
